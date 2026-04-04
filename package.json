@@ -1,0 +1,36 @@
+{
+  "name": "dashr",
+  "version": "0.1.0",
+  "description": "The orchestration control plane for OpenClaw agents",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "db:migrate": "knex migrate:latest",
+    "db:seed": "knex seed:run",
+    "db:rollback": "knex migrate:rollback",
+    "db:reset": "knex migrate:rollback --all && knex migrate:latest && knex seed:run",
+    "setup": "node scripts/setup.js"
+  },
+  "keywords": ["openclaw", "agents", "orchestration", "dashboard", "ai", "kanban"],
+  "author": "DashR Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "knex": "^3.1.0",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "uuid": "^9.0.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
