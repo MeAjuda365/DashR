@@ -41,7 +41,7 @@ User creates task → Connie routes it → Agents execute → You watch it happe
 ### Option A — Docker (recommended, 1 command)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/dashr/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/MeAjuda365/DashR/main/scripts/install.sh | bash
 ```
 
 Then open: **http://localhost:3000**
@@ -49,7 +49,7 @@ Then open: **http://localhost:3000**
 ### Option B — Manual
 
 ```bash
-git clone https://github.com/YOUR_ORG/dashr.git
+git clone https://github.com/MeAjuda365/DashR.git
 cd dashr
 cp .env.example .env        # edit with your OpenClaw gateway token
 npm install
@@ -61,7 +61,7 @@ npm start
 ### Option C — Docker Compose
 
 ```bash
-git clone https://github.com/YOUR_ORG/dashr.git
+git clone https://github.com/MeAjuda365/DashR.git
 cd dashr
 cp .env.example .env
 docker compose up -d
@@ -227,7 +227,7 @@ Then restart: `openclaw gateway restart`
 DashR is MIT licensed. PRs welcome.
 
 ```bash
-git clone https://github.com/YOUR_ORG/dashr.git
+git clone https://github.com/MeAjuda365/DashR.git
 cd dashr && npm install
 npm run dev     # starts with nodemon + live reload
 ```

@@ -1,13 +1,13 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────
 #  DashR — One-line installer
-#  Usage: curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/dashr/main/scripts/install.sh | bash
+#  Usage: curl -fsSL https://raw.githubusercontent.com/MeAjuda365/DashR/main/scripts/install.sh | bash
 # ─────────────────────────────────────────────────────────────────
 set -e
 
 DASHR_VERSION="0.1.0"
 DASHR_DIR="${HOME}/.dashr"
-DASHR_REPO="https://github.com/YOUR_ORG/dashr.git"
+DASHR_REPO="https://github.com/MeAjuda365/DashR.git"
 PORT="${DASHR_PORT:-3000}"
 
 # Colors
@@ -88,7 +88,7 @@ echo -e "  Start now:     ${CYAN}cd $DASHR_DIR && npm start${RESET}"
 echo -e "  Open browser:  ${CYAN}http://localhost:${PORT}${RESET}"
 echo ""
 echo -e "  Edit config:   ${CYAN}$DASHR_DIR/.env${RESET}"
-echo -e "  Docs:          ${CYAN}https://github.com/YOUR_ORG/dashr/tree/main/docs${RESET}"
+echo -e "  Docs:          ${CYAN}https://github.com/MeAjuda365/DashR/tree/main/docs${RESET}"
 echo ""
 echo -e "${YELLOW}Tip: Add OpenClaw hooks so DashR receives live agent events:${RESET}"
 echo '  Edit ~/.openclaw/openclaw.json → add hooks endpoint → openclaw gateway restart'
