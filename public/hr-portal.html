@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal RH — Connect Digital</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0b0b0b;
+  --surface:#111111;
+  --card:#191919;
+  --border:#222222;
+  --text:#efefef;
+  --muted:#7a7a7a;
+  --accent:#f97316;
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#3b82f6;
+  --purple:#a855f7;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+
+.container{
+  width:100%;max-width:540px;
+}
+
+.header{
+  text-align:center;margin-bottom:32px;
+}
+.logo{
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.logo-dot{
+  width:10px;height:10px;border-radius:50%;background:var(--accent);
+}
+.logo-text{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
+h1{font-size:22px;font-weight:600;margin-bottom:6px;}
+.subtitle{color:var(--muted);font-size:13px;}
+
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:28px;
+}
+
+.form-group{margin-bottom:20px;}
+label{
+  display:block;font-size:12px;font-weight:500;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:8px;
+}
+label span.req{color:var(--accent);}
+
+input,select,textarea{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-size:14px;
+  padding:10px 12px;outline:none;transition:border-color .15s;
+  font-family:inherit;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+select option{background:var(--surface);}
+textarea{resize:vertical;min-height:90px;}
+
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.type-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.type-btn{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:10px 12px;cursor:pointer;text-align:left;color:var(--text);
+  font-size:13px;transition:border-color .15s,background .15s;
+  display:flex;align-items:center;gap:8px;
+}
+.type-btn:hover{border-color:#333;}
+.type-btn.selected{border-color:var(--accent);background:rgba(249,115,22,.08);}
+.type-icon{font-size:16px;}
+
+.hint{font-size:11px;color:var(--muted);margin-top:6px;}
+
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+.submit-btn{
+  width:100%;background:var(--accent);color:#fff;border:none;
+  border-radius:6px;padding:12px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:opacity .15s;
+}
+.submit-btn:hover:not(:disabled){opacity:.9;}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* States */
+.state-loading,.state-success,.state-error{
+  display:none;text-align:center;padding:40px 20px;
+}
+.state-loading.active,.state-success.active,.state-error.active{display:block;}
+
+.spinner{
+  width:36px;height:36px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;margin:0 auto 16px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.success-icon,.error-icon{font-size:40px;margin-bottom:16px;}
+.success-icon{color:var(--green);}
+.error-icon{color:var(--red);}
+
+.state-title{font-size:17px;font-weight:600;margin-bottom:8px;}
+.state-sub{color:var(--muted);font-size:13px;line-height:1.6;}
+
+.back-btn{
+  margin-top:20px;background:none;border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:8px 16px;font-size:13px;
+  cursor:pointer;
+}
+.back-btn:hover{border-color:#444;}
+
+/* Conditional date fields */
+.dates-section{display:none;}
+.dates-section.visible{display:block;}
+
+/* Footer */
+.footer{
+  text-align:center;margin-top:24px;
+  font-size:11px;color:var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <span class="logo-text">Connect Digital</span>
+    </div>
+    <h1>Portal de RH</h1>
+    <p class="subtitle">Submeta o seu pedido de ausência, férias ou documento.</p>
+  </div>
+
+  <div class="card" id="formCard">
+    <form id="hrForm">
+
+      <!-- Employee -->
+      <div class="form-group">
+        <label>O seu nome <span class="req">*</span></label>
+        <input type="text" id="employeeName" placeholder="Nome completo" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" id="employeeEmail" placeholder="nome@connectdigital.global" required autocomplete="email">
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Request type -->
+      <div class="form-group">
+        <label>Tipo de pedido <span class="req">*</span></label>
+        <div class="type-grid" id="typeGrid">
+          <button type="button" class="type-btn" data-type="vacation">
+            <span class="type-icon">🏖</span> Férias
+          </button>
+          <button type="button" class="type-btn" data-type="sick_leave">
+            <span class="type-icon">🤒</span> Baixa médica
+          </button>
+          <button type="button" class="type-btn" data-type="absence">
+            <span class="type-icon">📋</span> Ausência
+          </button>
+          <button type="button" class="type-btn" data-type="document">
+            <span class="type-icon">📄</span> Documento
+          </button>
+        </div>
+      </div>
+
+      <!-- Dates (shown for vacation, sick, absence) -->
+      <div class="dates-section" id="datesSection">
+        <div class="form-group">
+          <label>Período <span class="req">*</span></label>
+          <div class="date-row">
+            <div>
+              <input type="date" id="startDate">
+              <p class="hint">Início</p>
+            </div>
+            <div>
+              <input type="date" id="endDate">
+              <p class="hint">Fim</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document type (shown for document) -->
+      <div class="form-group" id="docTypeGroup" style="display:none">
+        <label>Tipo de documento</label>
+        <select id="docType">
+          <option value="">Selecione...</option>
+          <option value="employment_certificate">Declaração de vínculo</option>
+          <option value="salary_certificate">Declaração de salário</option>
+          <option value="irs_declaration">Declaração IRS</option>
+          <option value="ss_declaration">Declaração Segurança Social</option>
+          <option value="other">Outro</option>
+        </select>
+      </div>
+
+      <!-- Reason -->
+      <div class="form-group">
+        <label>Motivo / Observações</label>
+        <textarea id="reason" placeholder="Informação adicional relevante (opcional)"></textarea>
+      </div>
+
+      <div class="divider"></div>
+
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>
+        Submeter pedido
+      </button>
+    </form>
+
+    <!-- Loading -->
+    <div class="state-loading" id="stateLoading">
+      <div class="spinner"></div>
+      <div class="state-title">A enviar pedido...</div>
+      <div class="state-sub">Aguarde enquanto registamos o seu pedido.</div>
+    </div>
+
+    <!-- Success -->
+    <div class="state-success" id="stateSuccess">
+      <div class="success-icon">✓</div>
+      <div class="state-title">Pedido submetido</div>
+      <div class="state-sub" id="successMsg">
+        O seu pedido foi registado. Receberá uma resposta por email em até 2 dias úteis.
+      </div>
+      <button class="back-btn" onclick="resetForm()">Submeter outro pedido</button>
+    </div>
+
+    <!-- Error -->
+    <div class="state-error" id="stateError">
+      <div class="error-icon">✕</div>
+      <div class="state-title">Erro ao submeter</div>
+      <div class="state-sub" id="errorMsg">
+        Não foi possível enviar o seu pedido. Por favor tente novamente ou contacte a Inês.
+      </div>
+      <button class="back-btn" onclick="showForm()">Tentar novamente</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Connect Digital · Portal de Recursos Humanos · Dúvidas: Inês (RH)
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('hrForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const typeGrid = document.getElementById('typeGrid');
+  const datesSection = document.getElementById('datesSection');
+  const docTypeGroup = document.getElementById('docTypeGroup');
+
+  let selectedType = null;
+
+  // Type selection
+  typeGrid.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeGrid.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedType = btn.dataset.type;
+
+      const needsDates = ['vacation','sick_leave','absence'].includes(selectedType);
+      datesSection.classList.toggle('visible', needsDates);
+      docTypeGroup.style.display = selectedType === 'document' ? 'block' : 'none';
+
+      if (needsDates) {
+        document.getElementById('startDate').required = true;
+        document.getElementById('endDate').required = true;
+      } else {
+        document.getElementById('startDate').required = false;
+        document.getElementById('endDate').required = false;
+      }
+      checkValidity();
+    });
+  });
+
+  // Validity check
+  function checkValidity() {
+    const name = document.getElementById('employeeName').value.trim();
+    const email = document.getElementById('employeeEmail').value.trim();
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const hasType = !!selectedType;
+
+    let datesOk = true;
+    if (['vacation','sick_leave','absence'].includes(selectedType)) {
+      datesOk = !!(document.getElementById('startDate').value && document.getElementById('endDate').value);
+    }
+
+    submitBtn.disabled = !(name && emailValid && hasType && datesOk);
+  }
+
+  ['employeeName','employeeEmail','startDate','endDate'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkValidity);
+  });
+
+  // Form submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading();
+
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    const payload = {
+      employee_name: document.getElementById('employeeName').value.trim(),
+      employee_email: document.getElementById('employeeEmail').value.trim(),
+      request_type: selectedType,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      days_requested: (startDate && endDate) ? businessDays(startDate, endDate) : null,
+      doc_type: document.getElementById('docType').value || null,
+      reason: document.getElementById('reason').value.trim() || null,
+      channel: 'portal',
+      submitted_at: new Date().toISOString(),
+    };
+
+    // Portal token from URL param (e.g., /hr-portal?token=abc)
+    const urlToken = new URLSearchParams(window.location.search).get('token') || '';
+
+    try {
+      const res = await fetch('/api/hr-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Portal-Token': urlToken,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        showSuccess(data.data?.request_id, payload.request_type);
+      } else {
+        showError(data.error || 'Erro desconhecido.');
+      }
+    } catch (err) {
+      showError('Sem ligação ao servidor. Contacte a Inês diretamente.');
+    }
+  });
+
+  function businessDays(start, end) {
+    let count = 0;
+    const d = new Date(start);
+    const e = new Date(end);
+    while (d <= e) {
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) count++;
+      d.setDate(d.getDate() + 1);
+    }
+    return count;
+  }
+
+  function showLoading() {
+    form.style.display = 'none';
+    document.getElementById('stateLoading').classList.add('active');
+    document.getElementById('stateSuccess').classList.remove('active');
+    document.getElementById('stateError').classList.remove('active');
+  }
+
+  function showSuccess(reqId, type) {
+    document.getElementById('stateLoading').classList.remove('active');
+    document.getElementById('stateSuccess').classList.add('active');
+
+    const typeLabels = {
+      vacation: 'férias', sick_leave: 'baixa médica',
+      absence: 'ausência', document: 'documento'
+    };
+    const label = typeLabels[type] || type;
+    const idText = reqId ? ` (Ref: ${reqId})` : '';
+    document.getElementById('successMsg').textContent =
+      `Pedido de ${label} registado com sucesso${idText}. Receberá uma resposta por email em até 2 dias úteis.`;
+  }
+
+  function showError(msg) {
+    document.getElementById('stateLoading').classList.remove('active');
+    document.getElementById('stateError').classList.add('active');
+    document.getElementById('errorMsg').textContent = msg;
+  }
+
+  function showForm() {
+    document.getElementById('stateError').classList.remove('active');
+    form.style.display = 'block';
+  }
+
+  function resetForm() {
+    document.getElementById('stateSuccess').classList.remove('active');
+    form.reset();
+    selectedType = null;
+    typeGrid.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+    datesSection.classList.remove('visible');
+    docTypeGroup.style.display = 'none';
+    submitBtn.disabled = true;
+    form.style.display = 'block';
+  }
+</script>
+</body>
+</html>
